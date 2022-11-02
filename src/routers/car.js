@@ -43,14 +43,16 @@ router.get('/:id',(req, res)=>{
 
 //주행기록 추가************
 router.post('completeDrive/:id', async (req,res)=>{
-  const { user } = req
-  const { nickname } = req.body
+  console.log("completeDrive Hist Update page")
+  console.log(req.body)
+  const carNum = req.body.carNum
+  //const { nickname } = req.body
 
-  user.nickname = nickname
+  //user.nickname = nickname
   
-  const carhistinsert = await mysql.query('insertDriveHist',req.car[0].CAR_ID )
+  //const carhistinsert = await mysql.query('insertDriveHist',req.car[0].CAR_ID )
   //req.body:{"nickname":"bar"}
-  res.send(`UPDATE ${nickname}'s drivingLog!!`)
+  res.send(`UPDATE ${carNum}'s drivingLog!!`)
 })
 
 //차량 드라이브 이력 조회
