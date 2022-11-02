@@ -42,14 +42,16 @@ router.get('/:id',(req, res)=>{
 
 
 //주행기록 추가************
+//const bodyParser = require('body-parser')
+//app.use(bodyParser.urlencoded({extended : false}))
 router.post('/completeDrive/:id', async (req,res)=>{
   console.log("completeDrive Hist Update page")
   console.log(req.body)
-  const carNum = req.body.carNum
+  const carNum = req.body
   const { reqInsertData } = {
-    "CAR_ID" : req.body.carNum,
+    CAR_ID : req.body.carNum,
   }
-
+  console.log(reqInsertData)
   //const { nickname } = req.body
 
   //user.nickname = nickname
