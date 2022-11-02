@@ -16,28 +16,26 @@ app.use(express.json())
 app.set('views','src/views')
 app.set('view engine','pug')
 
-app.get('/', (req, res) => {
+//app.get('/', (req, res) => {
   // connection.query('SELECT * from car_info', (error, rows) => {
   //   if (error) throw error;
   //   console.log('car info is: ', rows);
   //   res.send(rows);
   // });
-  res.send("root경로")
-});
+  // connection.end();
+//  res.send("root경로")
+//});
 
 const {swaggerUi, specs} = require('./swagger')
 const userRouter = require('./routers/user')
 const carRouter = require('./routers/car')
 const viewRouter = require('./routers/view')
 
-app.use('/users', userRouter)
-app.use('/cars', carRouter)
-
 app.use('/public', express.static('src/public'))
 app.use('/uploads', express.static('uploads'))
-app.use('/statistics', (req, res)=>{
-  res.render('statistic')
-  })
+//app.use('/users', userRouter)
+app.use('/cars', carRouter)
+app.use('/', viewRouter)
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
 
@@ -51,5 +49,3 @@ app.use((err, req, res, next)=>{
 app.listen(PORT, () => {
   console.log(`The Express server is listening at port: ${PORT}`)   
 })
-
-//connection.end();

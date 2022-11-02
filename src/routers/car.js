@@ -1,10 +1,7 @@
 const express = require('express')
-const multer = require('multer')
-//const drivedb = require('.././sql')
 const mysql = require('../mysql')
 const router = express.Router()
-
-const upload = multer({dest: 'uploads/'})
+const date = new Date()
 
 // 차량 번호 전체 조회
 router.get('/', async (req, res, next)=>{
@@ -16,14 +13,13 @@ router.get('/', async (req, res, next)=>{
  
 router.param('id', async (req,res,next,value)=>{
   console.log(value)
-  console.log(!isNaN(value))
   try{
      if(!isNaN(value)){
        car = await mysql.query('findCarInfo', value)
       }else{
        car = await mysql.query('findCarInfobyNum', value)
      }
-    if(!car){
+    if(!car || !car.length){
       const err = new Error('Car not Found.')
       err.statusCode = 404
       throw err
@@ -41,27 +37,54 @@ router.get('/:id',(req, res)=>{
 })
 
 
-//주행기록 추가************
-//const bodyParser = require('body-parser')
-//app.use(bodyParser.urlencoded({extended : false}))
-router.post('/completeDrive/:id', async (req,res)=>{
+//주행기록 추가(insert)
+router.post('/completeDrive', async (req,res)=>{
   console.log("completeDrive Hist Update page")
-  console.log(req.body)
-  const carNum = req.body
-  const { reqInsertData } = {
-    CAR_ID : req.body.carNum,
-  }
-  console.log(reqInsertData)
-  //const { nickname } = req.body
+  const carinfo = await mysql.query('findCarId', req.body.carNum)
 
-  //user.nickname = nickname
-  
-  const carhistinsert = await mysql.query('insertDriveHist', reqInsertData)
-  //req.body:{"nickname":"bar"}
-  res.send(`UPDATE ${carNum}'s drivingLog!!`)
+  if(!carinfo || !carinfo.length){
+    res.send("no carID regist first")
+  }else{
+    const reqCarData = {
+      CAR_ID : carinfo[0].CAR_ID,
+      START_TIME : req.body.startTime,
+      END_TIME : req.body.endTime,
+      START_POS : req.body.startLatLng,
+      END_POS : req.body.endLatLng,
+      DISTANCE : Number(req.body.totDistance.toFixed(3)), 
+    }
+    console.log(reqCarData)
+    const reqInsertData= {
+      CAR_ID : reqCarData.CAR_ID,
+      //START_TIME : reqCarData.START_TIME,
+      //END_TIME : reqCarData.END_TIME,
+      START_POS : reqCarData.START_POS,
+      END_POS : reqCarData.END_POS,
+      DISTANCE : reqCarData.DISTANCE,
+    }    
+    const carhistinsert = await mysql.query('insertDriveHist', reqInsertData)
+    //console.log(carhistinsert)
+    res.send(`UPDATE ${req.body.carNum}'s drivingLog!!`)
+    const reqUpdateStatusData = [{
+      CAR_ID : reqCarData.CAR_ID,
+      NOW_POS : reqCarData.END_POS,
+      TOTAL_DIS : reqCarData.DISTANCE,
+     // TOTAL_TIME :,
+    },
+    reqCarData.DISTANCE,
+    {
+      CAR_ID : reqCarData.CAR_ID,
+      NOW_POS : reqCarData.END_POS, //주소정보 전환
+      LAST_UPDATED_DATE : date
+    }
+  ]
+    const updateCarStatus = await mysql.query('updateCarStatus', reqUpdateStatusData)
+    
+}
+
 })
 
-//차량 드라이브 이력 조회
+//차량 드라이브 이력 조회*******
 router.get('/:id/drivehist', async (req, res)=>{
   try{
     console.log("/id/drivehist : "+req.car[0].CAR_ID )
@@ -88,13 +111,10 @@ router.get('/:id/drivehist', async (req, res)=>{
 
 })
 
-router.post('/:id/profile', upload.single('profile'), (req, res, next)=>{
-  console.log(req.file)
-  const { user } = req
-  const { filename } = req.file
-  user.profileImageKey = filename
-  
-  res.send(`User profile image uploaded: ${filename}`)
-})
-
 module.exports = router
+
+//날짜치환
+//위치좌표 주소 변환
+//통계페이지
+//등록페이지
+//ocr 번호판 처리

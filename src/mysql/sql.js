@@ -4,6 +4,10 @@ module.exports = {
   findCarId : `select CAR_ID from CAR_INFO where CAR_NUM=?`,
   findCarInfo : `select * from CAR_INFO where CAR_ID=?`,
   findCarInfobyNum: `select * from CAR_INFO where CAR_NUM=?`,
-  insertDriveHist: `insert into DRIVE_HIST set ? `, 
-  getCarHist: `select * from DRIVE_HIST where CAR_ID=?`
+  insertDriveHist: `insert into DRIVE_HIST set ?`, 
+  getCarHist: `select * from DRIVE_HIST where CAR_ID=?`,
+  countCarHist: `select CAR_ID, count(CAR_ID) as count from DRIVE_HIST group by CAR_ID`,
+  getAllCarHist: `select * from DRIVE_HIST order by CAR_ID, END_TIME desc`,
+  updateCarStatus: `insert into CAR_STAT set ? on duplicate key update TOTAL_DIS = TOTAL_DIS+?, ?`,
+  
 }
