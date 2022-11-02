@@ -1,0 +1,19 @@
+body{
+  background-color:white
+}
+
+.gold{
+  color: gold;
+}
+
+.green{
+  color: greenyellow
+}
+
+.big{
+  font-size:50px;
+}
+
+.profileImage{
+  width: 300px
+}

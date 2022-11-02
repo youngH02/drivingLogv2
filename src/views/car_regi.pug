@@ -1,0 +1,13 @@
+html
+  head
+    link(rel="stylesheet" href="/public/index.css")
+  body 
+    h1 차량 등록 페이지
+    h2 등록된 차량
+    div= nickname
+
+    h2 신규 등록 차량
+    img(src=profileImageURL).profileImage
+    form(action=`/users/${userId}/profile` method="post" enctype="multipart/form-data")
+      input(type="file" name="carImage")
+      button Upload Car Number Image
